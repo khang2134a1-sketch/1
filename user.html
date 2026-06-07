@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BuffMaster</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        /* Style giống như admin, chỉ khác ở sidebar */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); background-attachment: fixed; color: #fff; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); z-index: -1; }
+        .container { width: 90%; max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .navbar { background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); padding: 15px 0; position: sticky; top: 0; z-index: 100; }
+        .navbar .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 28px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo span { color: #6c63ff; }
+        .nav-menu { display: flex; gap: 30px; list-style: none; }
+        .nav-menu a { color: #fff; text-decoration: none; }
+        .dashboard-wrapper { display: flex; gap: 30px; margin-top: 30px; }
+        .sidebar { width: 280px; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-radius: 30px; padding: 20px; height: fit-content; position: sticky; top: 90px; }
+        .sidebar h3 { margin-bottom: 20px; color: #6c63ff; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar li { margin: 15px 0; padding: 10px 15px; border-radius: 40px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; }
+        .sidebar li i { font-size: 24px; width: 30px; }
+        .sidebar li.active, .sidebar li:hover { background: #6c63ff; color: white; }
+        .main-content { flex: 1; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 30px; padding: 30px; }
+        .content-pane { display: none; }
+        .content-pane.active { display: block; }
+        .service-group { margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 20px; }
+        input, select, button { padding: 10px 15px; border-radius: 40px; border: none; margin: 5px 0; }
+        .btn-submit { background: #6c63ff; color: white; cursor: pointer; }
+        .balance-highlight { font-size: 24px; color: #6c63ff; font-weight: bold; }
+        .link-stats { background: #1e1e2f; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
+        .game-frame { display: flex; justify-content: center; }
+        .reward-buttons { display: flex; gap: 15px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+        .reward-btn { background: #f39c12; font-weight: bold; color: white; cursor: pointer; }
+        .tool-frame { width: 100%; height: 600px; border: none; border-radius: 15px; background: rgba(0,0,0,0.3); }
+        @media (max-width: 768px) { .dashboard-wrapper { flex-direction: column; } .sidebar { width: 100%; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar"><div class="container"><a href="index.html" class="logo">Buff<span>Master</span></a><ul class="nav-menu"><li><a href="#" id="logoutBtn">Đăng xuất</a></li></ul></div></nav>
+    <div class="container dashboard-wrapper">
+        <div class="sidebar">
+            <h3><i class='bx bx-menu-alt-left'></i> Menu</h3>
+            <ul id="dynamicMenu"></ul>
+        </div>
+        <div class="main-content" id="mainContent">
+            <!-- Các pane sẽ được tạo động, nhưng để dễ dàng tôi giữ cấu trúc cũ và ẩn/hiện bằng JS -->
+            <div id="accountPane" class="content-pane active"><h2>Thông tin tài khoản</h2><p><strong>Họ tên:</strong> <span id="accFullname"></span></p><p><strong>Tên đăng nhập:</strong> <span id="accUsername"></span></p><p><strong>Email:</strong> <span id="accEmail"></span></p><p><strong>Số dư:</strong> <span id="accBalance" class="balance-highlight"></span> VNĐ</p><p><strong>Ngày tham gia:</strong> <span id="accCreated"></span></p></div>
+            <div id="gamePane" class="content-pane"><h2>🎲 Nhân phẩm</h2><div class="service-group"><div class="game-frame"><iframe style="max-width:100%; border-radius:15px;" src="https://wordwall.net/embed/bf626e420c3f48a4a018106ff3bc19c4?themeId=65&templateId=8&fontStackId=0" width="500" height="380" frameborder="0" allowfullscreen></iframe></div><div class="reward-buttons"><button id="reward10Btn" class="reward-btn">🏆 Nhận 10đ</button><button id="reward100Btn" class="reward-btn">🏆 Nhận 100đ</button><button id="reward1000Btn" class="reward-btn">🏆 Nhận 1000đ</button></div><div id="gameResult"></div></div></div>
+            <div id="tiktokPane" class="content-pane"><h2>Buff TikTok</h2><div class="service-group"><label>Link:</label><input type="text" id="tiktokLink" style="width:100%"><label>Loại:</label><select id="buffType"><option value="like">Like - <span id="priceLikeLabel">...</span>đ</option><option value="comment">Comment - <span id="priceCommentLabel">...</span>đ</option><option value="follow">Follow - <span id="priceFollowLabel">...</span>đ</option><option value="view">View - <span id="priceViewLabel">...</span>đ</option></select><label>Số lượng:</label><input type="number" id="buffQuantity" value="100"><button id="submitBuffRequest" class="btn-submit">Gửi yêu cầu</button><p class="note">Số dư: <span id="balanceHint"></span>đ</p></div></div>
+            <div id="bypassPane" class="content-pane"><h2>Vượt link (<span id="bypassRewardLabel">...</span>đ/lần)</h2><div class="service-group"><div class="link-stats">🔗 Tổng link: <strong id="totalLinksCount">0</strong><br>✅ Đã vượt: <span id="bypassedCount">0</span><br>📦 Còn lại: <span id="remainingCount">0</span></div><button id="doBypassBtn" class="btn-submit">Vượt link ngay</button><div id="bypassResult"></div></div></div>
+            <div id="transferPane" class="content-pane"><h2>Nạp tiền</h2><div class="service-group" style="text-align:center"><a href="napthe.php" style="display:inline-block; background:#6c63ff; color:white; padding:12px 30px; border-radius:40px; text-decoration:none;">💳 Nạp thẻ cào</a></div></div>
+            <div id="withdrawPane" class="content-pane"><h2>Rút tiền</h2><div class="service-group"><p class="note">⚠️ Rút qua thesieure.com</p><label>Số tiền:</label><input type="number" id="withdrawAmount"><label>Thông tin nhận (SĐT/Email):</label><input type="text" id="withdrawInfo"><button id="submitWithdrawRequest" class="btn-submit">Gửi yêu cầu</button><div id="withdrawResult"></div></div></div>
+            <div id="keyPane" class="content-pane"><h2>Nhập Key (<span id="keyRewardLabel">...</span>đ)</h2><div class="service-group"><label>Key:</label><input type="text" id="redeemKey"><button id="redeemKeyBtn" class="btn-submit">Nhận thưởng</button><div id="keyResult"></div></div></div>
+            <div id="toolsPane" class="content-pane"><h2>Công cụ</h2><div><button class="btn-submit tool-btn" data-tool="tool1">Tool 1</button><button class="btn-submit tool-btn" data-tool="tool2">Tool 2</button><button class="btn-submit tool-btn" data-tool="tool3">Tool 3</button></div><iframe id="userToolFrame" class="tool-frame" src="about:blank"></iframe></div>
+            <div id="historyPane" class="content-pane"><h2>Lịch sử</h2><ul id="historyList" style="list-style:none; padding:0"></ul></div>
+            <!-- Các pane cho chức năng tùy chỉnh sẽ được thêm động vào đây -->
+        </div>
+    </div>
+    <footer><div class="container"><p>&copy; 2026 BuffMaster</p></div></footer>
+
+    <script>
+        (function() {
+            let loggedUser = JSON.parse(localStorage.getItem('loggedInUser'));
+            if (!loggedUser) { window.location.href = 'index.html'; return; }
+
+            // Lấy toggle và custom features
+            function getFeatureToggles() {
+                let defaultToggles = { buffTiktok:true, bypassLink:true, redeemKey:true, miniGame:true, withdraw:true, deposit:true };
+                let saved = localStorage.getItem('feature_toggles');
+                return saved ? { ...defaultToggles, ...JSON.parse(saved) } : defaultToggles;
+            }
+            function getCustomFeatures() {
+                let features = localStorage.getItem('custom_features');
+                return features ? JSON.parse(features) : [];
+            }
+
+            let toggles = getFeatureToggles();
+            let customFeatures = getCustomFeatures();
+
+            // Xây dựng menu động
+            const menuItemsDef = [
+                { id: 'account', icon: 'bx bx-user-circle', label: 'Thông tin tài khoản', pane: 'accountPane', always: true },
+                { id: 'game', icon: 'bx bx-game', label: '🎮 Nhân phẩm', pane: 'gamePane', toggle: 'miniGame' },
+                { id: 'tiktok', icon: 'bx bxl-tiktok', label: 'Dịch vụ Buff TikTok', pane: 'tiktokPane', toggle: 'buffTiktok' },
+                { id: 'bypass', icon: 'bx bx-link-alt', label: 'Vượt link kiếm tiền', pane: 'bypassPane', toggle: 'bypassLink' },
+                { id: 'transfer', icon: 'bx bx-transfer', label: 'Nạp tiền', pane: 'transferPane', toggle: 'deposit' },
+                { id: 'withdraw', icon: 'bx bx-money-withdraw', label: 'Rút tiền', pane: 'withdrawPane', toggle: 'withdraw' },
+                { id: 'key', icon: 'bx bx-key', label: 'Nhận thưởng Key', pane: 'keyPane', toggle: 'redeemKey' },
+                { id: 'tools', icon: 'bx bx-wrench', label: 'Công cụ', pane: 'toolsPane', always: true },
+                { id: 'history', icon: 'bx bx-history', label: 'Lịch sử giao dịch', pane: 'historyPane', always: true }
+            ];
+            // Thêm các chức năng tùy chỉnh
+            customFeatures.forEach((feat, idx) => {
+                menuItemsDef.push({
+                    id: `custom_${feat.id}`,
+                    icon: 'bx bx-star',
+                    label: `✨ ${feat.name}`,
+                    pane: `customPane_${feat.id}`,
+                    custom: true,
+                    featureData: feat
+                });
+            });
+
+            const menuUl = document.getElementById('dynamicMenu');
+            function buildMenu() {
+                menuUl.innerHTML = '';
+                menuItemsDef.forEach(item => {
+                    if (item.toggle && !toggles[item.toggle]) return;
+                    if (item.always === false && !item.toggle) return;
+                    const li = document.createElement('li');
+                    li.className = 'menu-item';
+                    if (item.id === 'account') li.classList.add('active');
+                    li.setAttribute('data-pane', item.pane);
+                    li.innerHTML = `<i class='${item.icon}'></i> <span>${item.label}</span>`;
+                    li.onclick = () => {
+                        document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active'));
+                        li.classList.add('active');
+                        document.querySelectorAll('.content-pane').forEach(p=>p.classList.remove('active'));
+                        document.getElementById(item.pane).classList.add('active');
+                        // Nếu là pane tùy chỉnh, có thể thêm logic riêng
+                        if (item.custom && item.featureData) {
+                            // Đảm bảo pane đã tồn tại (sẽ tạo bên dưới)
+                        }
+                    };
+                    menuUl.appendChild(li);
+                });
+            }
+
+            // Tạo các pane cho custom features nếu chưa có
+            customFeatures.forEach(feat => {
+                const paneId = `customPane_${feat.id}`;
+                if (!document.getElementById(paneId)) {
+                    const mainDiv = document.getElementById('mainContent');
+                    const newPane = document.createElement('div');
+                    newPane.id = paneId;
+                    newPane.className = 'content-pane';
+                    newPane.innerHTML = `<h2>✨ ${feat.name}</h2><div class="service-group"><p>${feat.desc || 'Nhận thưởng một lần'}</p><button id="claimBtn_${feat.id}" class="btn-submit">🎁 Nhận thưởng ${feat.reward}đ</button><div id="claimResult_${feat.id}"></div></div>`;
+                    mainDiv.appendChild(newPane);
+                    // Gắn sự kiện nhận thưởng (mỗi user chỉ một lần)
+                    const claimKey = `claimed_${feat.id}_${loggedUser.username}`;
+                    const btn = document.getElementById(`claimBtn_${feat.id}`);
+                    if (btn) {
+                        btn.onclick = () => {
+                            if (localStorage.getItem(claimKey)) {
+                                document.getElementById(`claimResult_${feat.id}`).innerHTML = '<div class="error">Bạn đã nhận thưởng chức năng này rồi!</div>';
+                                return;
+                            }
+                            // Cộng tiền
+                            loggedUser.balance += feat.reward;
+                            let allUsers = JSON.parse(localStorage.getItem('users')) || [];
+                            let userIdx = allUsers.findIndex(u => u.username === loggedUser.username);
+                            if (userIdx !== -1) {
+                                allUsers[userIdx].balance = loggedUser.balance;
+                                let history = allUsers[userIdx].history || [];
+                                history.push({ type: 'custom_feature', name: feat.name, reward: feat.reward, date: new Date().toISOString() });
+                                allUsers[userIdx].history = history;
+                                localStorage.setItem('users', JSON.stringify(allUsers));
+                            }
+                            localStorage.setItem('loggedInUser', JSON.stringify(loggedUser));
+                            localStorage.setItem(claimKey, 'true');
+                            document.getElementById('accBalance').innerText = loggedUser.balance;
+                            document.getElementById(`claimResult_${feat.id}`).innerHTML = `<div class="success">🎉 Nhận thưởng thành công! +${feat.reward}đ. Số dư mới: ${loggedUser.balance}đ</div>`;
+                            loadHistoryList();
+                        };
+                    }
+                }
+            });
+
+            // Hàm cập nhật số dư và lịch sử (giống cũ)
+            function loadHistoryList() {
+                const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+                const currentUser = allUsers.find(u => u.username === loggedUser.username);
+                const history = currentUser?.history || [];
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = '';
+                if (history.length === 0) { historyList.innerHTML = '<li>Chưa có giao dịch</li>'; return; }
+                history.slice().reverse().forEach(h => {
+                    const li = document.createElement('li');
+                    li.style.marginBottom = '10px'; li.style.padding = '10px'; li.style.background = 'rgba(255,255,255,0.1)'; li.style.borderRadius = '20px';
+                    let text = '';
+                    if (h.type === 'bypass_link') text = `Vượt link ${h.link} +${h.earned}đ`;
+                    else if (h.type === 'key_redeem') text = `Nhập key ${h.key} +${h.earned}đ`;
+                    else if (h.type === 'mini_game') text = `${h.detail} +${h.amount}đ`;
+                    else if (h.type === 'buff_tiktok') text = `Buff ${h.service} x${h.quantity} -${h.cost}đ`;
+                    else if (h.type === 'custom_feature') text = `Nhận thưởng "${h.name}" +${h.reward}đ`;
+                    else text = JSON.stringify(h);
+                    li.innerHTML = `<i class='bx bx-info-circle'></i> ${new Date(h.date).toLocaleString()} - ${text}`;
+                    historyList.appendChild(li);
+                });
+            }
+
+            // Các hàm xử lý logic cũ (mini game, vượt link, key, nạp, rút, buff) giữ nguyên, chỉ thêm kiểm tra toggle nếu cần (đã ẩn menu nên không cần)
+            // Tôi sẽ giữ nguyên code xử lý từ bản trước, chỉ bổ sung custom features
+            // (Do giới hạn độ dài, tôi sẽ viết tóm gọn các hàm cần thiết)
+            // Để tránh lặp lại quá nhiều, tôi sẽ chỉ đưa các hàm chính đã có trong các lần trước và kết hợp.
+
+            // Khởi tạo các biến và hàm cần thiết (giống như user.html trước)
+            function getPrices() { let defaultPrices={like:10,comment:20,follow:50,view:10,bypass:400,key:400}; let saved=localStorage.getItem('system_prices'); return saved?{...defaultPrices,...JSON.parse(saved)}:defaultPrices; }
+            let prices = getPrices();
+            document.getElementById('priceLikeLabel').innerText = prices.like; document.getElementById('priceCommentLabel').innerText = prices.comment; document.getElementById('priceFollowLabel').innerText = prices.follow; document.getElementById('priceViewLabel').innerText = prices.view;
+            document.getElementById('bypassRewardLabel').innerText = prices.bypass; document.getElementById('keyRewardLabel').innerText = prices.key;
+            function getMasterLinks() { let links = localStorage.getItem('masterLinks'); return links ? links.split('\n').filter(l=>l.trim()) : []; }
+            function getMasterKeys() { let keys = localStorage.getItem('masterKeys'); return keys ? keys.split('\n').filter(k=>k.trim()) : []; }
+            let allLinks = getMasterLinks(); let validKeys = getMasterKeys();
+            document.getElementById('accFullname').innerText = loggedUser.fullname; document.getElementById('accUsername').innerText = loggedUser.username; document.getElementById('accEmail').innerText = loggedUser.email; document.getElementById('accBalance').innerText = loggedUser.balance; document.getElementById('accCreated').innerText = new Date(loggedUser.createdAt).toLocaleDateString('vi-VN'); document.getElementById('balanceHint').innerText = loggedUser.balance;
+            function addMoney(amount, type, detail) { loggedUser.balance += amount; let allUsers = JSON.parse(localStorage.getItem('users')) || []; let userIdx = allUsers.findIndex(u=>u.username===loggedUser.username); if(userIdx!==-1){ allUsers[userIdx].balance = loggedUser.balance; let history = allUsers[userIdx].history || []; history.push({ type: type, amount: amount, detail: detail, date: new Date().toISOString() }); allUsers[userIdx].history = history; localStorage.setItem('users', JSON.stringify(allUsers)); } localStorage.setItem('loggedInUser', JSON.stringify(loggedUser)); document.getElementById('accBalance').innerText = loggedUser.balance; document.getElementById('balanceHint').innerText = loggedUser.balance; loadHistoryList(); }
+            // Mini game
+            document.getElementById('reward10Btn').onclick = () => { addMoney(10,'mini_game','Nhận 10đ'); document.getElementById('gameResult').innerHTML='<div class="success">Nhận 10đ</div>'; };
+            document.getElementById('reward100Btn').onclick = () => { addMoney(100,'mini_game','Nhận 100đ'); document.getElementById('gameResult').innerHTML='<div class="success">Nhận 100đ</div>'; };
+            document.getElementById('reward1000Btn').onclick = () => { addMoney(1000,'mini_game','Nhận 1000đ'); document.getElementById('gameResult').innerHTML='<div class="success">Nhận 1000đ</div>'; };
+            // Vượt link
+            let usedLinksKey = `usedLinks_${loggedUser.username}`; let usedIndices = JSON.parse(localStorage.getItem(usedLinksKey)) || [];
+            function updateLinkStats() { let usedCount = usedIndices.length; let remaining = allLinks.length - usedCount; document.getElementById('totalLinksCount').innerText = allLinks.length; document.getElementById('bypassedCount').innerText = usedCount; document.getElementById('remainingCount').innerText = remaining; }
+            updateLinkStats();
+            function getRandomUnusedLink() { if(usedIndices.length>=allLinks.length) return null; let available = []; for(let i=0;i<allLinks.length;i++) if(!usedIndices.includes(i)) available.push(i); let randIndex = available[Math.floor(Math.random()*available.length)]; return { link: allLinks[randIndex], index: randIndex }; }
+            document.getElementById('doBypassBtn').onclick = () => { allLinks = getMasterLinks(); if(allLinks.length===0){ document.getElementById('bypassResult').innerHTML='<div class="error">Chưa có link</div>'; return; } if(usedIndices.length>=allLinks.length){ document.getElementById('bypassResult').innerHTML='<div class="error">Hết link</div>'; return; } let result = getRandomUnusedLink(); if(!result) return; let {link,index}=result; let reward = prices.bypass; loggedUser.balance += reward; usedIndices.push(index); localStorage.setItem(usedLinksKey,JSON.stringify(usedIndices)); let allUsers=JSON.parse(localStorage.getItem('users'))||[]; let userIdx=allUsers.findIndex(u=>u.username===loggedUser.username); if(userIdx!==-1){ allUsers[userIdx].balance=loggedUser.balance; let history=allUsers[userIdx].history||[]; history.push({type:'bypass_link',link:link,earned:reward,date:new Date().toISOString()}); allUsers[userIdx].history=history; localStorage.setItem('users',JSON.stringify(allUsers)); } localStorage.setItem('loggedInUser',JSON.stringify(loggedUser)); document.getElementById('accBalance').innerText=loggedUser.balance; document.getElementById('balanceHint').innerText=loggedUser.balance; updateLinkStats(); document.getElementById('bypassResult').innerHTML=`<div class="success">✅ Vượt link: ${link}<br>+${reward}đ. Số dư: ${loggedUser.balance}đ</div>`; loadHistoryList(); };
+            // Key
+            let usedKeysKey = `usedKeys_${loggedUser.username}`; let usedKeys = JSON.parse(localStorage.getItem(usedKeysKey)) || [];
+            document.getElementById('redeemKeyBtn').onclick = () => { validKeys = getMasterKeys(); let inputKey = document.getElementById('redeemKey').value.trim(); if(!inputKey){ document.getElementById('keyResult').innerHTML='<div class="error">Nhập key</div>'; return; } if(validKeys.length===0){ document.getElementById('keyResult').innerHTML='<div class="error">Chưa có key</div>'; return; } if(!validKeys.includes(inputKey)){ document.getElementById('keyResult').innerHTML='<div class="error">Key không hợp lệ</div>'; return; } if(usedKeys.includes(inputKey)){ document.getElementById('keyResult').innerHTML='<div class="error">Key đã dùng</div>'; return; } let reward = prices.key; loggedUser.balance += reward; usedKeys.push(inputKey); localStorage.setItem(usedKeysKey,JSON.stringify(usedKeys)); let allUsers=JSON.parse(localStorage.getItem('users'))||[]; let userIdx=allUsers.findIndex(u=>u.username===loggedUser.username); if(userIdx!==-1){ allUsers[userIdx].balance=loggedUser.balance; let history=allUsers[userIdx].history||[]; history.push({type:'key_redeem',key:inputKey,earned:reward,date:new Date().toISOString()}); allUsers[userIdx].history=history; localStorage.setItem('users',JSON.stringify(allUsers)); } localStorage.setItem('loggedInUser',JSON.stringify(loggedUser)); document.getElementById('accBalance').innerText=loggedUser.balance; document.getElementById('balanceHint').innerText=loggedUser.balance; document.getElementById('keyResult').innerHTML=`<div class="success">🎉 +${reward}đ. Số dư: ${loggedUser.balance}đ</div>`; loadHistoryList(); document.getElementById('redeemKey').value=''; };
+            // Buff TikTok
+            document.getElementById('submitBuffRequest').onclick = () => { const link = document.getElementById('tiktokLink').value.trim(); const type = document.getElementById('buffType').value; const qty = parseInt(document.getElementById('buffQuantity').value); if(!link || isNaN(qty) || qty<=0){ alert('Nhập link và số lượng'); return; } let unitPrice = prices[type] || 10; let cost = qty * unitPrice; if(loggedUser.balance < cost){ alert(`Không đủ ${cost}đ`); return; } let orders = JSON.parse(localStorage.getItem('orders')) || []; orders.push({ id:Date.now(), username:loggedUser.username, type:'buff_tiktok', service:type, link:link, quantity:qty, cost:cost, status:'pending', createdAt:new Date().toISOString() }); localStorage.setItem('orders',JSON.stringify(orders)); alert('Đã gửi yêu cầu buff'); };
+            // Rút tiền
+            document.getElementById('submitWithdrawRequest').onclick = () => { let amount = parseInt(document.getElementById('withdrawAmount').value); let info = document.getElementById('withdrawInfo').value.trim(); if(isNaN(amount)||amount<=0||!info){ document.getElementById('withdrawResult').innerHTML='<div class="error">Nhập đủ thông tin</div>'; return; } if(loggedUser.balance<amount){ document.getElementById('withdrawResult').innerHTML=`<div class="error">Số dư không đủ</div>`; return; } let withdraws = JSON.parse(localStorage.getItem('withdrawRequests')) || []; withdraws.push({ username:loggedUser.username, amount:amount, withdrawInfo:info, date:new Date().toISOString(), status:'pending' }); localStorage.setItem('withdrawRequests',JSON.stringify(withdraws)); document.getElementById('withdrawResult').innerHTML='<div class="success">Đã gửi yêu cầu rút tiền</div>'; document.getElementById('withdrawAmount').value=''; document.getElementById('withdrawInfo').value=''; };
+            // Công cụ
+            const tools = { tool1:'https://taokey567.c25tool.net/htacces/3.2.php', tool2:'https://taokey567.c25tool.net/htacces/3.5.php', tool3:'https://taokey567.c25tool.net/htacces/3.4.php' };
+            document.querySelectorAll('.tool-btn').forEach(btn=>{ btn.onclick = () => { let url = tools[btn.getAttribute('data-tool')]; if(url) document.getElementById('userToolFrame').src = url; }; });
+            if(document.querySelector('.tool-btn')) document.querySelector('.tool-btn').click();
+            loadHistoryList();
+            buildMenu();
+
+            document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('loggedInUser'); window.location.href='index.html'; };
+        })();
+    </script>
+</body>
+</html>

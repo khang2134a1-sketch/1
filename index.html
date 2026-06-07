@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buff MXH & Vượt Link Kiếm Tiền</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">Buff<span>MXH</span></a>
+            <ul class="nav-menu">
+                <li><a href="#about">Về tôi</a></li>
+                <li><a href="#services">Dịch vụ</a></li>
+            </ul>
+            <button id="openAuthBtn" class="btn-login">Đăng nhập</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="about" class="about section-bg">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Về Tôi</h2>
+                   
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <img src="https://via.placeholder.com/300x300?text=Avatar" class="img-fluid" alt="Avatar">
+                    </div>
+                    <div class="col-lg-8 content">
+                        <h3>k</h3>
+                        <p class="fst-italic">Nhà phát triển web & Buff MXH</p>
+                        <ul>
+                            <li><i class="bx bx-envelope"></i> <strong>Email:</strong> tienguyen2k823@gmail.com</li>
+                            <li><i class="bx bx-phone"></i> <strong>Điện thoại:</strong> +84 (123) 456 789</li>
+                            <li><i class="bx bx-calendar"></i> <strong>Sinh nhật:</strong> 23 Tháng Mười, 2008</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="services">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Dịch Vụ Của Tôi</h2>
+                    <p>Buff like, follow, view, comment... và vượt link rút gọn kiếm tiền cực nhanh</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="icon-box">
+                            <i class="bx bxl-facebook-circle"></i>
+                            <h4>Buff Like Facebook</h4>
+                            <p>Tăng like bài viết, ảnh, video Facebook chất lượng cao.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="icon-box">
+                            <i class="bx bxl-instagram"></i>
+                            <h4>Buff Follow Instagram</h4>
+                            <p>Tăng follow, tim, view story Instagram uy tín.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="icon-box">
+                            <i class="bx bxl-tiktok"></i>
+                            <h4>Buff View TikTok</h4>
+                            <p>Tăng view, like, follow, bình luận TikTok tương tác cao.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="icon-box">
+                            <i class="bx bx-share"></i>
+                            <h4>Buff Share & Comment</h4>
+                            <p>Chia sẻ bài viết, bình luận bằng tài khoản Việt Nam thật.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="icon-box">
+                            <i class="bx bx-link-alt"></i>
+                            <h4>Vượt Link Rút Gọn</h4>
+                            <p>Kiếm tiền từ link rút gọn (likevn.com, link4m.com...) tự động.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="icon-box">
+                            <i class="bx bx-money"></i>
+                            <h4>Auto Bypass Link</h4>
+                            <p>Tool vượt link rút gọn hàng loạt, tăng thu nhập thụ động.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Đăng nhập / Đăng ký -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Đăng nhập</button>
+                <button class="tab-btn" data-tab="register">Đăng ký</button>
+            </div>
+            <form id="loginForm" class="auth-form active">
+                <h3>Chào mừng trở lại</h3>
+                <input type="text" placeholder="Tên đăng nhập" id="loginUsername" required>
+                <input type="password" placeholder="Mật khẩu" id="loginPassword" required>
+                <button type="submit" class="auth-btn">Đăng nhập</button>
+                <p class="auth-switch">Chưa có tài khoản? <span class="switch-to-register">Đăng ký ngay</span></p>
+            </form>
+            <form id="registerForm" class="auth-form">
+                <h3>Tạo tài khoản</h3>
+                <input type="text" placeholder="Họ và tên" id="regFullname" required>
+                <input type="email" placeholder="Email" id="regEmail" required>
+                <input type="text" placeholder="Tên đăng nhập" id="regUsername" required>
+                <input type="password" placeholder="Mật khẩu" id="regPassword" required>
+                <input type="password" placeholder="Xác nhận mật khẩu" id="regConfirm" required>
+                <button type="submit" class="auth-btn">Đăng ký</button>
+                <p class="auth-switch">Đã có tài khoản? <span class="switch-to-login">Đăng nhập ngay</span></p>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 BuffMaster. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ======================= XỬ LÝ MODAL =======================
+        const modal = document.getElementById('authModal');
+        const openBtn = document.getElementById('openAuthBtn');
+        const closeBtn = document.querySelector('.close-modal');
+
+        if (openBtn) {
+            openBtn.onclick = () => {
+                if (modal) modal.style.display = 'flex';
+                else alert('Lỗi: không tìm thấy modal');
+            };
+        }
+        if (closeBtn) {
+            closeBtn.onclick = () => {
+                if (modal) modal.style.display = 'none';
+            };
+        }
+        window.onclick = (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        }
+
+        // Chuyển tab
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const forms = document.querySelectorAll('.auth-form');
+        if (tabBtns.length) {
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    forms.forEach(form => form.classList.remove('active'));
+                    if (tab === 'login') document.getElementById('loginForm').classList.add('active');
+                    else document.getElementById('registerForm').classList.add('active');
+                });
+            });
+        }
+
+        // Xử lý chuyển bằng link phụ
+        document.querySelectorAll('.switch-to-register').forEach(el => {
+            el.addEventListener('click', () => {
+                document.querySelector('.tab-btn[data-tab="register"]').click();
+            });
+        });
+        document.querySelectorAll('.switch-to-login').forEach(el => {
+            el.addEventListener('click', () => {
+                document.querySelector('.tab-btn[data-tab="login"]').click();
+            });
+        });
+
+        // ======================= XỬ LÝ ĐĂNG NHẬP / ĐĂNG KÝ =======================
+        // Khởi tạo dữ liệu mẫu nếu chưa có
+        if (!localStorage.getItem('users')) {
+            const defaultUsers = [
+                { fullname: 'Administrator', email: 'admin@buffmaster.com', username: 'admin', password: '12345', balance: 0, status: 'active', createdAt: new Date().toISOString(), history: [], role: 'admin' }
+            ];
+            localStorage.setItem('users', JSON.stringify(defaultUsers));
+        }
+
+        // Đăng nhập
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    localStorage.setItem('loggedInUser', JSON.stringify(user));
+                    alert('Đăng nhập thành công!');
+                    if (user.username === 'admin') window.location.href = 'admin.html';
+                    else window.location.href = 'user.html';
+                } else {
+                    alert('Sai tên đăng nhập hoặc mật khẩu');
+                }
+            });
+        }
+
+        // Đăng ký
+        const registerForm = document.getElementById('registerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const fullname = document.getElementById('regFullname').value;
+                const email = document.getElementById('regEmail').value;
+                const username = document.getElementById('regUsername').value;
+                const password = document.getElementById('regPassword').value;
+                const confirm = document.getElementById('regConfirm').value;
+                if (password !== confirm) {
+                    alert('Mật khẩu xác nhận không khớp');
+                    return;
+                }
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                if (users.find(u => u.username === username)) {
+                    alert('Tên đăng nhập đã tồn tại');
+                    return;
+                }
+                const newUser = {
+                    fullname, email, username, password,
+                    balance: 0,
+                    status: 'active',
+                    createdAt: new Date().toISOString(),
+                    history: []
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Đăng ký thành công! Hãy đăng nhập.');
+                document.querySelector('.tab-btn[data-tab="login"]').click();
+            });
+        }
+    </script>
+</body>
+</html>
